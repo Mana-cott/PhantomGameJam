@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://djruxi2ln3x7n"]
+
+[ext_resource type="Script" path="res://scripts/fight_mode_player.gd" id="1_rlagq"]
+[ext_resource type="Texture2D" uid="uid://sk1kkutn12uv" path="res://icon.svg" id="2_4ds7a"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8ndtg"]
+radius = 58.0
+height = 124.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6u8th"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_4ds7a")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="FightModePlayer" type="CharacterBody2D"]
+script = ExtResource("1_rlagq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_8ndtg")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_6u8th")

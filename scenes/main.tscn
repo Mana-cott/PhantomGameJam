@@ -1,3 +1,19 @@
-[gd_scene format=3 uid="uid://dw1228i6ghuu7"]
+[gd_scene load_steps=5 format=3 uid="uid://dw1228i6ghuu7"]
+
+[ext_resource type="PackedScene" uid="uid://djruxi2ln3x7n" path="res://scenes/fight_mode/fight_mode_player.tscn" id="1_74vlj"]
+[ext_resource type="PackedScene" uid="uid://bh6oravl6ofbh" path="res://scenes/fight_mode/fight_mode_camera.tscn" id="2_8xjc1"]
+[ext_resource type="PackedScene" uid="uid://t3bwf1useet1" path="res://scenes/fight_mode/fight_mode_manager.tscn" id="3_e3qy3"]
+[ext_resource type="PackedScene" uid="uid://dym74yu753v8" path="res://scenes/fight_mode/fight_mode_level.tscn" id="4_vbmcx"]
 
 [node name="Main" type="Node2D"]
+
+[node name="FightMode" type="Node2D" parent="."]
+
+[node name="FightModePlayer" parent="FightMode" instance=ExtResource("1_74vlj")]
+position = Vector2(0, -109)
+
+[node name="FightModeCamera" parent="FightMode" instance=ExtResource("2_8xjc1")]
+
+[node name="FightModeManager" parent="FightMode" instance=ExtResource("3_e3qy3")]
+
+[node name="FightModeLevel" parent="FightMode" instance=ExtResource("4_vbmcx")]
