@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://djruxi2ln3x7n"]
+[gd_scene load_steps=31 format=3 uid="uid://djruxi2ln3x7n"]
 
 [ext_resource type="Script" path="res://scripts/fight_mode_player.gd" id="1_rlagq"]
 [ext_resource type="Texture2D" uid="uid://cs42l2i258tst" path="res://assets/sprites/test_spritesheet.png" id="2_elo6r"]
@@ -38,14 +38,6 @@ region = Rect2(1770, 0, 885, 877)
 [sub_resource type="AtlasTexture" id="AtlasTexture_52c8c"]
 atlas = ExtResource("2_elo6r")
 region = Rect2(2655, 0, 885, 877)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_3wwx3"]
-atlas = ExtResource("2_elo6r")
-region = Rect2(885, 0, 885, 877)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_oxsvu"]
-atlas = ExtResource("2_elo6r")
-region = Rect2(885, 2631, 885, 877)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_rao1t"]
 atlas = ExtResource("2_elo6r")
@@ -171,12 +163,6 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_3wwx3")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_oxsvu")
-}, {
-"duration": 1.0,
 "texture": SubResource("AtlasTexture_rao1t")
 }, {
 "duration": 1.0,
@@ -186,7 +172,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_pewho")
 }],
 "loop": true,
-"name": &"punch",
+"name": &"light_punch",
 "speed": 12.0
 }, {
 "frames": [{
@@ -254,4 +240,4 @@ shape = SubResource("CapsuleShape2D_8ndtg")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 scale = Vector2(0.1498, 0.1498)
 sprite_frames = SubResource("SpriteFrames_6u8th")
-animation = &"walk"
+animation = &"light_punch"
