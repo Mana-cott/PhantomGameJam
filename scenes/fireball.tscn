@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://bwj3iulwnal27"]
+
+[ext_resource type="Texture2D" uid="uid://sk1kkutn12uv" path="res://icon.svg" id="1_xywnv"]
+[ext_resource type="Script" path="res://scripts/fireball.gd" id="2_qoai2"]
+
+[node name="Fireball" type="Sprite2D"]
+position = Vector2(0, -7.62939e-06)
+scale = Vector2(0.225559, 0.232845)
+texture = ExtResource("1_xywnv")
+script = ExtResource("2_qoai2")
