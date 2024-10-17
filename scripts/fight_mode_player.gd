@@ -8,6 +8,10 @@ const LIGHT_PUNCH_DURATION = 0.3
 const HEAVY_PUNCH_DURATION = 0.8
 const LIGHT_KICK_DURATION = 0.4
 const HEAVY_KICK_DURATION = 0.9
+const CROUCH_PUNCH_DURATION = 0.4
+const CROUCH_KICK_DURATION = 0.4
+const AIRBORNE_PUNCH_DURATION = 0.4
+const AIRBORNE_KICK_DURATION = 0.4
 const HADOUKEN_DURATION = 0.5
 const HADOUKEN_INPUT_TIME = 0.5
 const FIREBALL_SPEED = 400.0
@@ -15,14 +19,23 @@ const FIREBALL_SPEED = 400.0
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var current_animation = ""
 var sprinting = false
+var crouching = false
 var light_punching = false
 var heavy_punching = false
 var light_kicking = false
 var heavy_kicking = false
+var crouch_punching = false
+var crouch_kicking = false
+var airborne_punching = false
+var airborne_kicking = false
 var light_punch_timer = 0.0
 var heavy_punch_timer = 0.0
 var light_kick_timer = 0.0
 var heavy_kick_timer = 0.0
+var crouch_punch_timer = 0.0
+var crouch_kick_timer = 0.0
+var airborne_punch_timer = 0.0
+var airborne_kick_timer = 0.0
 var last_right_tap_time = 0.0
 var jump_committed = false
 var hadouken_playing = false 
@@ -30,6 +43,7 @@ var is_throwing_hadouken = false
 var hadouken_duration_timer = 0.0
 var hadouken_input_timer = 0.0
 var hadouken_step = 0
+var combat_state_checker: bool = not light_punching and not heavy_punching and not light_kicking and not heavy_kicking and not crouch_punching and not crouch_kicking and not airborne_punching and not airborne_kicking
 
 @onready var animator: AnimatedSprite2D = $AnimatedSprite2D
 @onready var fireball_spawn: Marker2D = $FireballSpawn
@@ -55,32 +69,64 @@ func _physics_process(delta):
 
 	# Handle LP timer
 	if light_punching:
-		velocity.x = 0
+		if is_on_floor():
+			velocity.x = 0
 		light_punch_timer -= delta
 		if light_punch_timer <= 0:
 			light_punching = false
 			_set_animation("idle", true)  # Return to idle after LP
 	# Handle HP timer
 	if heavy_punching:
-		velocity.x = 0
+		if is_on_floor():
+			velocity.x = 0
 		heavy_punch_timer -= delta
 		if heavy_punch_timer <= 0:
 			heavy_punching = false
 			_set_animation("idle", true)  # Return to idle after HP
 	# Handle LK timer
 	if light_kicking:
-		velocity.x = 0
+		if is_on_floor():
+			velocity.x = 0
 		light_kick_timer -= delta
 		if light_kick_timer <= 0:
 			light_kicking = false
 			_set_animation("idle", true)  # Return to idle after LK
 	# Handle HK timer
 	if heavy_kicking:
-		velocity.x = 0
+		if is_on_floor():
+			velocity.x = 0
 		heavy_kick_timer -= delta
 		if heavy_kick_timer <= 0:
 			heavy_kicking = false
 			_set_animation("idle", true)  # Return to idle after HK
+	# Handle CP timer
+	if crouch_punching:
+		if is_on_floor():
+			velocity.x = 0
+		crouch_punch_timer -= delta
+		if crouch_punch_timer <= 0:
+			crouch_punching = false
+			_set_animation("crouch", true)  # Return to crouch after CP
+	# Handle CK timer
+	if crouch_kicking:
+		if is_on_floor():
+			velocity.x = 0
+		crouch_kick_timer -= delta
+		if crouch_kick_timer <= 0:
+			crouch_kicking = false
+			_set_animation("crouch", true)  # Return to crouch after CK
+	# Handle AP timer
+	if airborne_punching:
+		airborne_punch_timer -= delta
+		if airborne_punch_timer <= 0:
+			airborne_punching = false
+			_set_animation("airborne", true)  # Return to falling after AP
+	# Handle AK timer
+	if airborne_kicking:
+		airborne_kick_timer -= delta
+		if airborne_kick_timer <= 0:
+			airborne_kicking = false
+			_set_animation("airborne", true)  # Return to falling after AK
 
 	# Gravity handling
 	if not is_on_floor():
@@ -106,7 +152,7 @@ func _physics_process(delta):
 	_check_hadouken_sequence()
 
 	# Light Punch logic (LP)
-	if Input.is_action_just_pressed("light_punch") and not light_punching and not heavy_punching and not light_kicking and not heavy_kicking:
+	if Input.is_action_just_pressed("light_punch") and combat_state_checker:
 		if hadouken_step == 3:
 			_trigger_hadouken()
 		else:
@@ -115,7 +161,7 @@ func _physics_process(delta):
 			light_punch_timer = LIGHT_PUNCH_DURATION
 			
 	# Heavy Punch logic (HP)
-	if Input.is_action_just_pressed("heavy_punch") and not heavy_punching and not light_punching and not light_kicking and not heavy_kicking:
+	if Input.is_action_just_pressed("heavy_punch") and combat_state_checker:
 		if hadouken_step == 3:
 			_trigger_hadouken()
 		else:
@@ -124,33 +170,66 @@ func _physics_process(delta):
 			heavy_punch_timer = HEAVY_PUNCH_DURATION
 			
 	# Light Kick logic (LK)
-	if Input.is_action_just_pressed("light_kick") and not light_kicking and not heavy_kicking and not light_punching and not heavy_punching:
+	if Input.is_action_just_pressed("light_kick") and combat_state_checker:
 		_set_animation("light_kick", true)
 		light_kicking = true
 		light_kick_timer = LIGHT_KICK_DURATION
 		
 	# Heavy Kick logic (HK)
-	if Input.is_action_just_pressed("heavy_kick") and not heavy_kicking and not light_kicking and not light_punching and not heavy_punching:
+	if Input.is_action_just_pressed("heavy_kick") and combat_state_checker:
 		_set_animation("heavy_kick", true)
 		heavy_kicking = true
 		heavy_kick_timer = HEAVY_KICK_DURATION
+	
+	# Crouch Punch logic (CP)
+	if (Input.is_action_just_pressed("light_punch") or Input.is_action_just_pressed("heavy_punch")) and crouching and combat_state_checker:
+		_set_animation("crouch_punch", true)
+		crouch_punching = true
+		crouch_punch_timer = CROUCH_PUNCH_DURATION
+		
+	# Crouch Kick logic (CK)
+	if (Input.is_action_just_pressed("light_kick") or Input.is_action_just_pressed("heavy_kick")) and crouching and combat_state_checker:
+		_set_animation("crouch_kick", true)
+		crouch_kicking = true
+		crouch_kick_timer = CROUCH_KICK_DURATION
+	
+	# Airborne Punch logic (AP)
+	if (Input.is_action_just_pressed("light_punch") or Input.is_action_just_pressed("heavy_punch")) and not is_on_floor() and combat_state_checker:
+		if not airborne_punching:  # Only start if not already airborne punching
+			print("airborne punching")
+			_set_animation("jump_punch", true)
+			airborne_punching = true
+			airborne_punch_timer = AIRBORNE_PUNCH_DURATION
+
+	# Airborne Kick logic (AK)
+	if (Input.is_action_just_pressed("light_kick") or Input.is_action_just_pressed("heavy_kick")) and not is_on_floor() and combat_state_checker:
+		if not airborne_kicking:  # Only start if not already airborne kicking
+			print("airborne kicking")
+			_set_animation("jump_kick", true)
+			airborne_kicking = true
+			airborne_kick_timer = AIRBORNE_KICK_DURATION
+
 
 	# Prevent sideways movement during a jump, and any movement during combat
-	if not jump_committed and not hadouken_playing and not light_punching and not heavy_punching and not light_kicking and not heavy_kicking:
+	if not jump_committed and (not is_on_floor() or (is_on_floor() and not hadouken_playing and not light_punching and not heavy_punching and not light_kicking and not heavy_kicking and not crouch_punching and not crouch_kicking and not airborne_punching and not airborne_kicking)):
 		# Movement logic
 		if Input.is_action_pressed("move_right"):
 			if sprinting or _is_double_tap_sprint():
 				sprinting = true
 				velocity.x = SPRINT_SPEED
 				_set_animation("run", true)
+				crouching = false
 			else:
 				velocity.x = SPEED
 				_set_animation("walk", true)
+				crouching = false
 		elif Input.is_action_pressed("move_left"):
 			velocity.x = -SPEED
 			_set_animation("walk", false)
 			sprinting = false
+			crouching = false
 		elif Input.is_action_pressed("move_down") and is_on_floor():
+			crouching = true
 			velocity = Vector2.ZERO
 			_set_animation("crouch", true)
 		else:
@@ -159,6 +238,7 @@ func _physics_process(delta):
 			if is_on_floor() and not light_punching and not is_throwing_hadouken:
 				_set_animation("idle", true)
 			sprinting = false
+			crouching = false
 
 	# Apply movement
 	move_and_slide()

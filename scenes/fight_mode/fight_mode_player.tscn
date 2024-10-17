@@ -790,9 +790,7 @@ shape = SubResource("CapsuleShape2D_8ndtg")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 scale = Vector2(0.1498, 0.1498)
 sprite_frames = SubResource("SpriteFrames_6u8th")
-animation = &"heavy_punch"
-frame = 10
-frame_progress = 1.0
+animation = &"crouch_punch"
 
 [node name="FireballSpawn" type="Marker2D" parent="."]
 position = Vector2(46, 0)
