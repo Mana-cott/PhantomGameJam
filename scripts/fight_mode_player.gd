@@ -5,6 +5,9 @@ const SPRINT_SPEED = 600.0
 const JUMP_VELOCITY = -600.0
 const DOUBLE_TAP_SPRINT_TIME = 0.3
 const LIGHT_PUNCH_DURATION = 0.3
+const HEAVY_PUNCH_DURATION = 0.8
+const LIGHT_KICK_DURATION = 0.4
+const HEAVY_KICK_DURATION = 0.9
 const HADOUKEN_DURATION = 0.5
 const HADOUKEN_INPUT_TIME = 0.5
 const FIREBALL_SPEED = 400.0
@@ -13,7 +16,13 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var current_animation = ""
 var sprinting = false
 var light_punching = false
+var heavy_punching = false
+var light_kicking = false
+var heavy_kicking = false
 var light_punch_timer = 0.0
+var heavy_punch_timer = 0.0
+var light_kick_timer = 0.0
+var heavy_kick_timer = 0.0
 var last_right_tap_time = 0.0
 var jump_committed = false
 var hadouken_playing = false 
@@ -51,6 +60,27 @@ func _physics_process(delta):
 		if light_punch_timer <= 0:
 			light_punching = false
 			_set_animation("idle", true)  # Return to idle after LP
+	# Handle HP timer
+	if heavy_punching:
+		velocity.x = 0
+		heavy_punch_timer -= delta
+		if heavy_punch_timer <= 0:
+			heavy_punching = false
+			_set_animation("idle", true)  # Return to idle after HP
+	# Handle LK timer
+	if light_kicking:
+		velocity.x = 0
+		light_kick_timer -= delta
+		if light_kick_timer <= 0:
+			light_kicking = false
+			_set_animation("idle", true)  # Return to idle after LK
+	# Handle HK timer
+	if heavy_kicking:
+		velocity.x = 0
+		heavy_kick_timer -= delta
+		if heavy_kick_timer <= 0:
+			heavy_kicking = false
+			_set_animation("idle", true)  # Return to idle after HK
 
 	# Gravity handling
 	if not is_on_floor():
@@ -75,18 +105,38 @@ func _physics_process(delta):
 	# Hadouken input sequence tracking
 	_check_hadouken_sequence()
 
-	# LightPunch logic (LP)
-	if Input.is_action_just_pressed("light_punch") and not light_punching and is_on_floor():
+	# Light Punch logic (LP)
+	if Input.is_action_just_pressed("light_punch") and not light_punching and not heavy_punching and not light_kicking and not heavy_kicking:
 		if hadouken_step == 3:
 			_trigger_hadouken()
 		else:
 			_set_animation("light_punch", true)
 			light_punching = true
 			light_punch_timer = LIGHT_PUNCH_DURATION
-
+			
+	# Heavy Punch logic (HP)
+	if Input.is_action_just_pressed("heavy_punch") and not heavy_punching and not light_punching and not light_kicking and not heavy_kicking:
+		if hadouken_step == 3:
+			_trigger_hadouken()
+		else:
+			_set_animation("heavy_punch", true)
+			heavy_punching = true
+			heavy_punch_timer = HEAVY_PUNCH_DURATION
+			
+	# Light Kick logic (LK)
+	if Input.is_action_just_pressed("light_kick") and not light_kicking and not heavy_kicking and not light_punching and not heavy_punching:
+		_set_animation("light_kick", true)
+		light_kicking = true
+		light_kick_timer = LIGHT_KICK_DURATION
+		
+	# Heavy Kick logic (HK)
+	if Input.is_action_just_pressed("heavy_kick") and not heavy_kicking and not light_kicking and not light_punching and not heavy_punching:
+		_set_animation("heavy_kick", true)
+		heavy_kicking = true
+		heavy_kick_timer = HEAVY_KICK_DURATION
 
 	# Prevent sideways movement during a jump, and any movement during combat
-	if not jump_committed and not hadouken_playing and not light_punching:
+	if not jump_committed and not hadouken_playing and not light_punching and not heavy_punching and not light_kicking and not heavy_kicking:
 		# Movement logic
 		if Input.is_action_pressed("move_right"):
 			if sprinting or _is_double_tap_sprint():
