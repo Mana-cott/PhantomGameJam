@@ -12,9 +12,14 @@ const CROUCH_PUNCH_DURATION = 0.4
 const CROUCH_KICK_DURATION = 0.4
 const AIRBORNE_PUNCH_DURATION = 0.4
 const AIRBORNE_KICK_DURATION = 0.4
+# hadouken
 const HADOUKEN_DURATION = 0.5
 const HADOUKEN_INPUT_TIME = 0.5
 const FIREBALL_SPEED = 400.0
+# tatsumaki
+const TATSUMAKI_DURATION = 0.7
+const TATSUMAKI_INPUT_TIME = 0.5
+const TATSUMAKI_SPEED = 500.0
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var current_animation = ""
@@ -40,10 +45,14 @@ var last_right_tap_time = 0.0
 var jump_committed = false
 var hadouken_playing = false 
 var is_throwing_hadouken = false
+var tatsumaki_playing = false
 var hadouken_duration_timer = 0.0
+var tatsumaki_duration_timer = 0.0
 var hadouken_input_timer = 0.0
+var tatsumaki_input_timer = 0.0
 var hadouken_step = 0
-var combat_state_checker: bool = not light_punching and not heavy_punching and not light_kicking and not heavy_kicking and not crouch_punching and not crouch_kicking and not airborne_punching and not airborne_kicking
+var tatsumaki_step = 0
+var combat_state_checker: bool = not light_punching and not heavy_punching and not light_kicking and not heavy_kicking and not crouch_punching and not crouch_kicking and not airborne_punching and not airborne_kicking and not hadouken_playing and not tatsumaki_playing
 
 @onready var animator: AnimatedSprite2D = $AnimatedSprite2D
 @onready var fireball_spawn: Marker2D = $FireballSpawn
@@ -61,11 +70,23 @@ func _physics_process(delta):
 			is_throwing_hadouken = false 
 			_set_animation("idle", true)
 			return  # Stops other logic while playing Hadouken
+	
+	if tatsumaki_playing:
+		tatsumaki_duration_timer -= delta
+		if tatsumaki_duration_timer <= 0:
+			tatsumaki_playing = false
+			_set_animation("idle", true)
+			velocity.x = 0
 
 	# Update Hadouken input timer
 	hadouken_input_timer -= delta
 	if hadouken_input_timer <= 0:
 		hadouken_step = 0
+		
+	# Update Tatsumaki input timer
+	tatsumaki_input_timer -= delta
+	if tatsumaki_input_timer <= 0:
+		tatsumaki_step = 0
 
 	# Handle LP timer
 	if light_punching:
@@ -132,7 +153,7 @@ func _physics_process(delta):
 	if not is_on_floor():
 		velocity.y += gravity * delta
 		
-		if velocity.x != 0:
+		if velocity.x != 0 and not airborne_punching and not airborne_kicking:
 			if velocity.x > 0:
 				_set_animation("airborne_moving", true)
 			else:
@@ -150,11 +171,15 @@ func _physics_process(delta):
 
 	# Hadouken input sequence tracking
 	_check_hadouken_sequence()
+	# Tatsumaki input sequence tracking
+	_check_tatsumaki_sequence()
 
 	# Light Punch logic (LP)
 	if Input.is_action_just_pressed("light_punch") and combat_state_checker:
 		if hadouken_step == 3:
 			_trigger_hadouken()
+		elif tatsumaki_step == 3:
+			_trigger_tatsumaki()
 		else:
 			_set_animation("light_punch", true)
 			light_punching = true
@@ -164,6 +189,8 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("heavy_punch") and combat_state_checker:
 		if hadouken_step == 3:
 			_trigger_hadouken()
+		elif tatsumaki_step == 3:
+			_trigger_tatsumaki()
 		else:
 			_set_animation("heavy_punch", true)
 			heavy_punching = true
@@ -211,7 +238,7 @@ func _physics_process(delta):
 
 
 	# Prevent sideways movement during a jump, and any movement during combat
-	if not jump_committed and (not is_on_floor() or (is_on_floor() and not hadouken_playing and not light_punching and not heavy_punching and not light_kicking and not heavy_kicking and not crouch_punching and not crouch_kicking and not airborne_punching and not airborne_kicking)):
+	if not jump_committed and (not is_on_floor() or (is_on_floor() and not hadouken_playing and not tatsumaki_playing and not light_punching and not heavy_punching and not light_kicking and not heavy_kicking and not crouch_punching and not crouch_kicking and not airborne_punching and not airborne_kicking)):
 		# Movement logic
 		if Input.is_action_pressed("move_right"):
 			if sprinting or _is_double_tap_sprint():
@@ -269,20 +296,33 @@ func _check_hadouken_sequence():
 			if Input.is_action_just_pressed("move_down"):
 				hadouken_step = 1
 				hadouken_input_timer = HADOUKEN_INPUT_TIME
-				print("step 1")
 		1:
 			if Input.is_action_just_pressed("move_right"):
 				hadouken_step = 2
-				print("step 2")
 		2:
 			if Input.is_action_pressed("move_right") and not Input.is_action_pressed("move_down"):
 				print("step 3")
 				hadouken_step = 3  # Hadouken sequence complete!
 
+# Tatsumaki input sequence checker
+func _check_tatsumaki_sequence():
+	match tatsumaki_step:
+		0:
+			if Input.is_action_just_pressed("move_down"):
+				tatsumaki_step = 1
+				tatsumaki_input_timer = TATSUMAKI_INPUT_TIME
+		1:
+			if Input.is_action_just_pressed("move_left"):
+				tatsumaki_step = 2
+		2:
+			if Input.is_action_pressed("move_left") and not Input.is_action_pressed("move_down"):
+				tatsumaki_step = 3  # Tatsumaki sequence complete!
+
 # Trigger Hadouken animation
 func _trigger_hadouken():
 	# Animation logic
 	light_punching = false
+	heavy_punching = false
 	hadouken_playing = true
 	is_throwing_hadouken = true
 	hadouken_duration_timer = HADOUKEN_DURATION
@@ -299,3 +339,13 @@ func _trigger_hadouken():
 	fireball_instance.velocity = Vector2(FIREBALL_SPEED, 0)
 
 	hadouken_step = 0
+
+# Trigger Tatsumaki animation
+func _trigger_tatsumaki():
+	print("activated tatsu")
+	light_punching = false
+	heavy_punching = false
+	tatsumaki_playing = true
+	tatsumaki_duration_timer = TATSUMAKI_DURATION
+	velocity.x = TATSUMAKI_SPEED if animator.flip_h == false else -TATSUMAKI_SPEED
+	_set_animation("tatsumaki", true)
