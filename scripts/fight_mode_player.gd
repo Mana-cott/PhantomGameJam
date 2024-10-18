@@ -19,7 +19,12 @@ const FIREBALL_SPEED = 400.0
 # tatsumaki
 const TATSUMAKI_DURATION = 0.7
 const TATSUMAKI_INPUT_TIME = 0.5
-const TATSUMAKI_SPEED = 500.0
+const TATSUMAKI_SPEED = 600.0
+# shoryuken
+const SHORYUKEN_DURATION = 0.6
+const SHORYUKEN_INPUT_TIME = 0.5
+const SHORYUKEN_JUMP_VELOCITY = -300.0
+const SHORYUKEN_FORWARD_VELOCITY = 200.0
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var current_animation = ""
@@ -46,13 +51,17 @@ var jump_committed = false
 var hadouken_playing = false 
 var is_throwing_hadouken = false
 var tatsumaki_playing = false
+var shoryuken_playing = false
 var hadouken_duration_timer = 0.0
 var tatsumaki_duration_timer = 0.0
+var shoryuken_duration_timer = 0.0
 var hadouken_input_timer = 0.0
 var tatsumaki_input_timer = 0.0
+var shoryuken_input_timer = 0.0
 var hadouken_step = 0
 var tatsumaki_step = 0
-var combat_state_checker: bool = not light_punching and not heavy_punching and not light_kicking and not heavy_kicking and not crouch_punching and not crouch_kicking and not airborne_punching and not airborne_kicking and not hadouken_playing and not tatsumaki_playing
+var shoryuken_step = 0
+var combat_state_checker: bool = not light_punching and not heavy_punching and not light_kicking and not heavy_kicking and not crouch_punching and not crouch_kicking and not airborne_punching and not airborne_kicking and not hadouken_playing and not tatsumaki_playing and not shoryuken_playing
 
 @onready var animator: AnimatedSprite2D = $AnimatedSprite2D
 @onready var fireball_spawn: Marker2D = $FireballSpawn
@@ -77,6 +86,15 @@ func _physics_process(delta):
 			tatsumaki_playing = false
 			_set_animation("idle", true)
 			velocity.x = 0
+	
+	if shoryuken_playing:
+		velocity.x = SHORYUKEN_FORWARD_VELOCITY
+		velocity.y = SHORYUKEN_JUMP_VELOCITY
+		shoryuken_duration_timer -= delta
+		if shoryuken_duration_timer <= 0:
+			shoryuken_playing = false
+			_set_animation("airborne_moving", true)
+			velocity = Vector2.ZERO
 
 	# Update Hadouken input timer
 	hadouken_input_timer -= delta
@@ -87,6 +105,11 @@ func _physics_process(delta):
 	tatsumaki_input_timer -= delta
 	if tatsumaki_input_timer <= 0:
 		tatsumaki_step = 0
+	
+	# Update Shoryuken input timer
+	shoryuken_input_timer -= delta
+	if shoryuken_input_timer <= 0:
+		shoryuken_step = 0
 
 	# Handle LP timer
 	if light_punching:
@@ -153,13 +176,14 @@ func _physics_process(delta):
 	if not is_on_floor():
 		velocity.y += gravity * delta
 		
-		if velocity.x != 0 and not airborne_punching and not airborne_kicking:
-			if velocity.x > 0:
-				_set_animation("airborne_moving", true)
+		if not shoryuken_playing and not airborne_punching and not airborne_kicking:
+			if velocity.x != 0:
+				if velocity.x > 0:
+					_set_animation("airborne_moving", true)
+				else:
+					_set_animation("airborne_moving", false)
 			else:
-				_set_animation("airborne_moving", false)
-		else:
-			_set_animation("airborne", true)
+				_set_animation("airborne", true)
 	else:
 		jump_committed = false
 
@@ -173,6 +197,8 @@ func _physics_process(delta):
 	_check_hadouken_sequence()
 	# Tatsumaki input sequence tracking
 	_check_tatsumaki_sequence()
+	# Shoryuken input sequence tracking
+	_check_shoryuken_sequence()
 
 	# Light Punch logic (LP)
 	if Input.is_action_just_pressed("light_punch") and combat_state_checker:
@@ -198,15 +224,21 @@ func _physics_process(delta):
 			
 	# Light Kick logic (LK)
 	if Input.is_action_just_pressed("light_kick") and combat_state_checker:
-		_set_animation("light_kick", true)
-		light_kicking = true
-		light_kick_timer = LIGHT_KICK_DURATION
+		if shoryuken_step == 3:
+			_trigger_shoryuken()
+		else:
+			_set_animation("light_kick", true)
+			light_kicking = true
+			light_kick_timer = LIGHT_KICK_DURATION
 		
 	# Heavy Kick logic (HK)
 	if Input.is_action_just_pressed("heavy_kick") and combat_state_checker:
-		_set_animation("heavy_kick", true)
-		heavy_kicking = true
-		heavy_kick_timer = HEAVY_KICK_DURATION
+		if shoryuken_step == 3:
+			_trigger_shoryuken()
+		else:
+			_set_animation("heavy_kick", true)
+			heavy_kicking = true
+			heavy_kick_timer = HEAVY_KICK_DURATION
 	
 	# Crouch Punch logic (CP)
 	if (Input.is_action_just_pressed("light_punch") or Input.is_action_just_pressed("heavy_punch")) and crouching and combat_state_checker:
@@ -238,34 +270,35 @@ func _physics_process(delta):
 
 
 	# Prevent sideways movement during a jump, and any movement during combat
-	if not jump_committed and (not is_on_floor() or (is_on_floor() and not hadouken_playing and not tatsumaki_playing and not light_punching and not heavy_punching and not light_kicking and not heavy_kicking and not crouch_punching and not crouch_kicking and not airborne_punching and not airborne_kicking)):
+	if not jump_committed and (not is_on_floor() or (is_on_floor() and not hadouken_playing and not tatsumaki_playing and not shoryuken_playing and not light_punching and not heavy_punching and not light_kicking and not heavy_kicking and not crouch_punching and not crouch_kicking and not airborne_punching and not airborne_kicking)):
 		# Movement logic
-		if Input.is_action_pressed("move_right"):
-			if sprinting or _is_double_tap_sprint():
-				sprinting = true
-				velocity.x = SPRINT_SPEED
-				_set_animation("run", true)
+		if not shoryuken_playing:
+			if Input.is_action_pressed("move_right"):
+				if sprinting or _is_double_tap_sprint():
+					sprinting = true
+					velocity.x = SPRINT_SPEED
+					_set_animation("run", true)
+					crouching = false
+				else:
+					velocity.x = SPEED
+					_set_animation("walk", true)
+					crouching = false
+			elif Input.is_action_pressed("move_left"):
+				velocity.x = -SPEED
+				_set_animation("walk", false)
+				sprinting = false
 				crouching = false
+			elif Input.is_action_pressed("move_down") and is_on_floor():
+				crouching = true
+				velocity = Vector2.ZERO
+				_set_animation("crouch", true)
 			else:
-				velocity.x = SPEED
-				_set_animation("walk", true)
+				velocity.x = move_toward(velocity.x, 0, SPEED)
+				# Check if we should set to idle
+				if is_on_floor() and not light_punching and not is_throwing_hadouken:
+					_set_animation("idle", true)
+				sprinting = false
 				crouching = false
-		elif Input.is_action_pressed("move_left"):
-			velocity.x = -SPEED
-			_set_animation("walk", false)
-			sprinting = false
-			crouching = false
-		elif Input.is_action_pressed("move_down") and is_on_floor():
-			crouching = true
-			velocity = Vector2.ZERO
-			_set_animation("crouch", true)
-		else:
-			velocity.x = move_toward(velocity.x, 0, SPEED)
-			# Check if we should set to idle
-			if is_on_floor() and not light_punching and not is_throwing_hadouken:
-				_set_animation("idle", true)
-			sprinting = false
-			crouching = false
 
 	# Apply movement
 	move_and_slide()
@@ -279,6 +312,7 @@ func _set_animation(animation_name: String, is_forward: bool):
 		else:
 			animator.play_backwards(animation_name)
 		current_animation = animation_name
+		print(current_animation)
 
 # Sprint checker
 func _is_double_tap_sprint() -> bool:
@@ -318,6 +352,20 @@ func _check_tatsumaki_sequence():
 			if Input.is_action_pressed("move_left") and not Input.is_action_pressed("move_down"):
 				tatsumaki_step = 3  # Tatsumaki sequence complete!
 
+# Shoryuken input sequence checker
+func _check_shoryuken_sequence():
+	match shoryuken_step:
+		0:
+			if Input.is_action_just_pressed("move_right"):
+				shoryuken_step = 1
+				shoryuken_input_timer = SHORYUKEN_INPUT_TIME
+		1:
+			if Input.is_action_just_pressed("move_down"):
+				shoryuken_step = 2
+		2:
+			if Input.is_action_just_pressed("move_right"):
+				shoryuken_step = 3  # Shoryuken sequence complete!
+
 # Trigger Hadouken animation
 func _trigger_hadouken():
 	# Animation logic
@@ -347,5 +395,17 @@ func _trigger_tatsumaki():
 	heavy_punching = false
 	tatsumaki_playing = true
 	tatsumaki_duration_timer = TATSUMAKI_DURATION
-	velocity.x = TATSUMAKI_SPEED if animator.flip_h == false else -TATSUMAKI_SPEED
 	_set_animation("tatsumaki", true)
+	await get_tree().create_timer(0.1).timeout
+	velocity.x = TATSUMAKI_SPEED if animator.flip_h == false else -TATSUMAKI_SPEED
+		
+# Trigger Shoryuken animation
+func _trigger_shoryuken():
+	light_kicking = false
+	heavy_kicking = false
+	shoryuken_playing = true
+	shoryuken_duration_timer = SHORYUKEN_DURATION
+	velocity.y = SHORYUKEN_JUMP_VELOCITY
+	velocity.x = SHORYUKEN_FORWARD_VELOCITY
+	_set_animation("shoryuken", true)
+	shoryuken_step = 0
