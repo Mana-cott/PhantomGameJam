@@ -9,12 +9,10 @@
 
 [node name="FightMode" type="Node2D" parent="."]
 
-[node name="FightModePlayer" parent="FightMode" instance=ExtResource("1_74vlj")]
-position = Vector2(0, -109)
-scale = Vector2(1.48617, 1.48617)
-
 [node name="FightModeCamera" parent="FightMode" instance=ExtResource("2_8xjc1")]
 
 [node name="FightModeManager" parent="FightMode" instance=ExtResource("3_e3qy3")]
 
 [node name="FightModeLevel" parent="FightMode" instance=ExtResource("4_vbmcx")]
+
+[node name="Player2" parent="FightMode" instance=ExtResource("1_74vlj")]

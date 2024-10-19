@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://dym74yu753v8"]
+[gd_scene load_steps=5 format=3 uid="uid://dym74yu753v8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qbp8v"]
 size = Vector2(1152, 174)
@@ -6,7 +6,10 @@ size = Vector2(1152, 174)
 [sub_resource type="BoxMesh" id="BoxMesh_roxr4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2tx6m"]
-size = Vector2(57, 473)
+size = Vector2(57, 807)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kyobx"]
+size = Vector2(1270.5, 34)
 
 [node name="FightModeLevel" type="Node2D"]
 
@@ -22,9 +25,13 @@ scale = Vector2(1152, 174)
 mesh = SubResource("BoxMesh_roxr4")
 
 [node name="CollisionWall1" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2(-605, 87.5)
+position = Vector2(-605, -24)
 shape = SubResource("RectangleShape2D_2tx6m")
 
 [node name="CollisionWall2" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2(605, 88)
+position = Vector2(605, 32.5)
 shape = SubResource("RectangleShape2D_2tx6m")
+
+[node name="CollisionShape3" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(0, -389)
+shape = SubResource("RectangleShape2D_kyobx")

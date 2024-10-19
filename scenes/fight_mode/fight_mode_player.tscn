@@ -1,4 +1,4 @@
-[gd_scene load_steps=115 format=3 uid="uid://djruxi2ln3x7n"]
+[gd_scene load_steps=116 format=3 uid="uid://djruxi2ln3x7n"]
 
 [ext_resource type="Script" path="res://scripts/fight_mode_player.gd" id="1_rlagq"]
 [ext_resource type="Texture2D" uid="uid://o5ivfudqr5dn" path="res://assets/sprites/idle_true.png" id="2_ysrqa"]
@@ -783,7 +783,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"light_punch",
-"speed": 12.0
+"speed": 1.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -899,7 +899,11 @@ animations = [{
 "speed": 12.0
 }]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_0qmst"]
+radius = 12.7571
+
 [node name="FightModePlayer" type="CharacterBody2D"]
+scale = Vector2(1.56971, 1.56971)
 script = ExtResource("1_rlagq")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -909,7 +913,36 @@ shape = SubResource("CapsuleShape2D_8ndtg")
 position = Vector2(22, -1)
 scale = Vector2(0.1498, 0.1498)
 sprite_frames = SubResource("SpriteFrames_6u8th")
-animation = &"airborne"
+animation = &"light_punch"
+frame = 1
+frame_progress = 0.338775
 
 [node name="FireballSpawn" type="Marker2D" parent="."]
 position = Vector2(46, 0)
+
+[node name="LightPunchCollider" type="CollisionShape2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(63.069, -16.5636)
+shape = SubResource("CircleShape2D_0qmst")
+
+[node name="HeavyPunchCollider" type="CollisionShape2D" parent="."]
+
+[node name="LightKickCollider" type="CollisionShape2D" parent="."]
+
+[node name="HeavyKickCollider" type="CollisionShape2D" parent="."]
+scale = Vector2(0.996344, 1)
+
+[node name="CrouchPunchCollider" type="CollisionShape2D" parent="."]
+
+[node name="CrouchKickCollider" type="CollisionShape2D" parent="."]
+scale = Vector2(1.00576, 1.01095)
+
+[node name="AirbornePunchCollider" type="CollisionShape2D" parent="."]
+
+[node name="AirborneKickCollider" type="CollisionShape2D" parent="."]
+
+[node name="TatsumakiCollider" type="CollisionShape2D" parent="."]
+
+[node name="ShoryukenCollider" type="CollisionShape2D" parent="."]
+scale = Vector2(1, 0.973219)
