@@ -67,7 +67,31 @@ var combat_state_checker: bool = not light_punching and not heavy_punching and n
 @onready var fireball_spawn: Marker2D = $FireballSpawn
 @onready var fireball_scene = preload("res://scenes/fireball.tscn")
 
+# hitboxes
+@onready var light_punch_collider: CollisionShape2D = $LightPunchCollider
+@onready var heavy_punch_collider: CollisionShape2D = $HeavyPunchCollider
+@onready var light_kick_collider: CollisionShape2D = $LightKickCollider
+@onready var heavy_kick_collider: CollisionShape2D = $HeavyKickCollider
+@onready var crouch_punch_collider: CollisionShape2D = $CrouchPunchCollider
+@onready var crouch_kick_collider: CollisionShape2D = $CrouchKickCollider
+@onready var airborne_punch_collider: CollisionShape2D = $AirbornePunchCollider
+@onready var airborne_kick_collider: CollisionShape2D = $AirborneKickCollider
+@onready var tatsumaki_collider: CollisionShape2D = $TatsumakiCollider
+@onready var shoryuken_collider: CollisionShape2D = $ShoryukenCollider
+
 func _physics_process(delta):
+	# activate hitboxes
+	light_punch_collider.disabled = !light_punching
+	heavy_punch_collider.disabled = !heavy_punching
+	light_kick_collider.disabled = !light_kicking
+	heavy_kick_collider.disabled = !heavy_kicking
+	crouch_punch_collider.disabled = !crouch_punching
+	crouch_kick_collider.disabled = !crouch_kicking
+	airborne_punch_collider.disabled = !airborne_punching
+	airborne_kick_collider.disabled = !airborne_kicking
+	tatsumaki_collider.disabled = !tatsumaki_playing
+	shoryuken_collider.disabled = !shoryuken_playing
+	
 	last_right_tap_time += delta
 	
 	# Handle Hadouken duration logic
@@ -209,6 +233,7 @@ func _physics_process(delta):
 		else:
 			_set_animation("light_punch", true)
 			light_punching = true
+			
 			light_punch_timer = LIGHT_PUNCH_DURATION
 			
 	# Heavy Punch logic (HP)

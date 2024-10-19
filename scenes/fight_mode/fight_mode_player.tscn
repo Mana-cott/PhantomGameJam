@@ -1,4 +1,4 @@
-[gd_scene load_steps=116 format=3 uid="uid://djruxi2ln3x7n"]
+[gd_scene load_steps=125 format=3 uid="uid://djruxi2ln3x7n"]
 
 [ext_resource type="Script" path="res://scripts/fight_mode_player.gd" id="1_rlagq"]
 [ext_resource type="Texture2D" uid="uid://o5ivfudqr5dn" path="res://assets/sprites/idle_true.png" id="2_ysrqa"]
@@ -783,7 +783,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"light_punch",
-"speed": 1.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -833,7 +833,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_oy3gp")
 }],
-"loop": true,
+"loop": false,
 "name": &"shoryuken",
 "speed": 12.0
 }, {
@@ -902,6 +902,37 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_0qmst"]
 radius = 12.7571
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p23hc"]
+radius = 14.7851
+height = 55.8764
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_d6o5s"]
+radius = 16.6125
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_i5imv"]
+radius = 22.4032
+height = 78.2108
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_u0bww"]
+radius = 11.5377
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_owelb"]
+radius = 13.3017
+height = 108.75
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bnc0c"]
+radius = 12.7412
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_asqoe"]
+height = 86.9461
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8564v"]
+radius = 21.854
+height = 52.239
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vck8q"]
+radius = 66.6125
+
 [node name="FightModePlayer" type="CharacterBody2D"]
 scale = Vector2(1.56971, 1.56971)
 script = ExtResource("1_rlagq")
@@ -913,9 +944,7 @@ shape = SubResource("CapsuleShape2D_8ndtg")
 position = Vector2(22, -1)
 scale = Vector2(0.1498, 0.1498)
 sprite_frames = SubResource("SpriteFrames_6u8th")
-animation = &"light_punch"
-frame = 1
-frame_progress = 0.338775
+animation = &"airborne"
 
 [node name="FireballSpawn" type="Marker2D" parent="."]
 position = Vector2(46, 0)
@@ -925,24 +954,77 @@ light_mask = 2
 visibility_layer = 2
 position = Vector2(63.069, -16.5636)
 shape = SubResource("CircleShape2D_0qmst")
+disabled = true
 
 [node name="HeavyPunchCollider" type="CollisionShape2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(67.2212, -7.69211)
+rotation = -0.317517
+scale = Vector2(1, 1)
+shape = SubResource("CapsuleShape2D_p23hc")
+disabled = true
 
 [node name="LightKickCollider" type="CollisionShape2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(61.7949, 8.28178)
+shape = SubResource("CircleShape2D_d6o5s")
+disabled = true
 
 [node name="HeavyKickCollider" type="CollisionShape2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(87.9143, 13.3783)
+rotation = 0.257551
 scale = Vector2(0.996344, 1)
+shape = SubResource("CapsuleShape2D_i5imv")
+disabled = true
 
 [node name="CrouchPunchCollider" type="CollisionShape2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(67.5284, 12.7412)
+shape = SubResource("CircleShape2D_u0bww")
+disabled = true
 
 [node name="CrouchKickCollider" type="CollisionShape2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(26.1195, 47.7795)
+rotation = 1.71895
 scale = Vector2(1.00576, 1.01095)
+shape = SubResource("CapsuleShape2D_owelb")
+disabled = true
 
 [node name="AirbornePunchCollider" type="CollisionShape2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(66.8913, 1.91118)
+shape = SubResource("CircleShape2D_bnc0c")
+disabled = true
 
 [node name="AirborneKickCollider" type="CollisionShape2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(78.9955, 15.2894)
+rotation = -1.26153
+shape = SubResource("CapsuleShape2D_asqoe")
+disabled = true
 
 [node name="TatsumakiCollider" type="CollisionShape2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(68.8025, -10.83)
+rotation = -1.41525
+shape = SubResource("CapsuleShape2D_8564v")
+disabled = true
 
 [node name="ShoryukenCollider" type="CollisionShape2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(15.2894, -5.73354)
+rotation = -0.194195
 scale = Vector2(1, 0.973219)
+shape = SubResource("CircleShape2D_vck8q")
+disabled = true
