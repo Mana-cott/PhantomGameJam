@@ -28,6 +28,9 @@ const SHORYUKEN_FORWARD_VELOCITY = 200.0
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var current_animation = ""
+var is_facing_right = true # starts off true
+var is_scale_x_flipped = false
+var side_multiplier = 1 # positive
 var sprinting = false
 var crouching = false
 var light_punching = false
@@ -66,6 +69,8 @@ var combat_state_checker: bool = not light_punching and not heavy_punching and n
 @onready var animator: AnimatedSprite2D = $AnimatedSprite2D
 @onready var fireball_spawn: Marker2D = $FireballSpawn
 @onready var fireball_scene = preload("res://scenes/fireball.tscn")
+@onready var right_raycast: RayCast2D = $RayCastRight
+@onready var left_raycast: RayCast2D = $RayCastLeft
 
 # hitboxes
 @onready var light_punch_collider: CollisionShape2D = $LightPunchCollider
@@ -80,6 +85,7 @@ var combat_state_checker: bool = not light_punching and not heavy_punching and n
 @onready var shoryuken_collider: CollisionShape2D = $ShoryukenCollider
 
 func _physics_process(delta):
+	
 	# activate hitboxes
 	light_punch_collider.disabled = !light_punching
 	heavy_punch_collider.disabled = !heavy_punching
@@ -93,6 +99,24 @@ func _physics_process(delta):
 	shoryuken_collider.disabled = !shoryuken_playing
 	
 	last_right_tap_time += delta
+	
+	# Correct flipping logic
+	print(self.scale.x)
+	if is_facing_right:
+		if is_scale_x_flipped:
+			self.scale.x = self.scale.x
+			is_scale_x_flipped = false
+		side_multiplier = 1
+	else:
+		if !is_scale_x_flipped:
+			self.scale.x = -self.scale.x
+			is_scale_x_flipped = true
+		side_multiplier = -1
+
+	if left_raycast.is_colliding() and left_raycast.get_collider().is_in_group("enemy"):
+		is_facing_right = false
+	if right_raycast.is_colliding() and right_raycast.get_collider().is_in_group("enemy"):
+		is_facing_right = true
 	
 	# Handle Hadouken duration logic
 	if hadouken_playing:
@@ -293,7 +317,6 @@ func _physics_process(delta):
 			airborne_kicking = true
 			airborne_kick_timer = AIRBORNE_KICK_DURATION
 
-
 	# Prevent sideways movement during a jump, and any movement during combat
 	if not jump_committed and (not is_on_floor() or (is_on_floor() and not hadouken_playing and not tatsumaki_playing and not shoryuken_playing and not light_punching and not heavy_punching and not light_kicking and not heavy_kicking and not crouch_punching and not crouch_kicking and not airborne_punching and not airborne_kicking)):
 		# Movement logic
@@ -422,7 +445,7 @@ func _trigger_tatsumaki():
 	tatsumaki_duration_timer = TATSUMAKI_DURATION
 	_set_animation("tatsumaki", true)
 	await get_tree().create_timer(0.1).timeout
-	velocity.x = TATSUMAKI_SPEED if animator.flip_h == false else -TATSUMAKI_SPEED
+	velocity.x = TATSUMAKI_SPEED * side_multiplier
 		
 # Trigger Shoryuken animation
 func _trigger_shoryuken():
@@ -431,6 +454,6 @@ func _trigger_shoryuken():
 	shoryuken_playing = true
 	shoryuken_duration_timer = SHORYUKEN_DURATION
 	velocity.y = SHORYUKEN_JUMP_VELOCITY
-	velocity.x = SHORYUKEN_FORWARD_VELOCITY
+	velocity.x = SHORYUKEN_FORWARD_VELOCITY * side_multiplier
 	_set_animation("shoryuken", true)
 	shoryuken_step = 0

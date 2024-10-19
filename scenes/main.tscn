@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://dw1228i6ghuu7"]
+[gd_scene load_steps=6 format=3 uid="uid://dw1228i6ghuu7"]
 
 [ext_resource type="PackedScene" uid="uid://djruxi2ln3x7n" path="res://scenes/fight_mode/fight_mode_player.tscn" id="1_74vlj"]
 [ext_resource type="PackedScene" uid="uid://bh6oravl6ofbh" path="res://scenes/fight_mode/fight_mode_camera.tscn" id="2_8xjc1"]
 [ext_resource type="PackedScene" uid="uid://t3bwf1useet1" path="res://scenes/fight_mode/fight_mode_manager.tscn" id="3_e3qy3"]
 [ext_resource type="PackedScene" uid="uid://dym74yu753v8" path="res://scenes/fight_mode/fight_mode_level.tscn" id="4_vbmcx"]
+[ext_resource type="PackedScene" uid="uid://crkq3m57lif7p" path="res://scenes/enemy.tscn" id="5_mvnjw"]
 
 [node name="Main" type="Node2D"]
 
@@ -15,4 +16,9 @@
 
 [node name="FightModeLevel" parent="FightMode" instance=ExtResource("4_vbmcx")]
 
-[node name="Player2" parent="FightMode" instance=ExtResource("1_74vlj")]
+[node name="Player" parent="FightMode" instance=ExtResource("1_74vlj")]
+position = Vector2(-435, 34)
+
+[node name="Enemy" parent="FightMode" instance=ExtResource("5_mvnjw")]
+position = Vector2(46, 2)
+scale = Vector2(0.306778, 0.306778)

@@ -944,7 +944,7 @@ shape = SubResource("CapsuleShape2D_8ndtg")
 position = Vector2(22, -1)
 scale = Vector2(0.1498, 0.1498)
 sprite_frames = SubResource("SpriteFrames_6u8th")
-animation = &"airborne"
+animation = &"idle"
 
 [node name="FireballSpawn" type="Marker2D" parent="."]
 position = Vector2(46, 0)
@@ -961,7 +961,6 @@ light_mask = 2
 visibility_layer = 2
 position = Vector2(67.2212, -7.69211)
 rotation = -0.317517
-scale = Vector2(1, 1)
 shape = SubResource("CapsuleShape2D_p23hc")
 disabled = true
 
@@ -1028,3 +1027,10 @@ rotation = -0.194195
 scale = Vector2(1, 0.973219)
 shape = SubResource("CircleShape2D_vck8q")
 disabled = true
+
+[node name="RayCastRight" type="RayCast2D" parent="."]
+target_position = Vector2(370.769, 0)
+
+[node name="RayCastLeft" type="RayCast2D" parent="."]
+rotation = -3.14167
+target_position = Vector2(370.769, 0)
