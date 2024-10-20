@@ -518,6 +518,8 @@ func _trigger_shoryuken():
 	shoryuken_step = 0
 
 func _die():
+	animator.play("dead")
+	await get_tree().create_timer(0.5).timeout
 	queue_free()
 	
 func _block_damage(base_damage: int):

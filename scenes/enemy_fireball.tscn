@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://b7412vqdm5ck3"]
+
+[ext_resource type="Texture2D" uid="uid://sk1kkutn12uv" path="res://icon.svg" id="1_xj0el"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ujwhn"]
+radius = 79.0253
+
+[node name="EnemyFireball" type="Sprite2D"]
+texture = ExtResource("1_xj0el")
+
+[node name="HitBox" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+shape = SubResource("CircleShape2D_ujwhn")
