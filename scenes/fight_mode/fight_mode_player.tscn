@@ -1,10 +1,10 @@
-[gd_scene load_steps=125 format=3 uid="uid://djruxi2ln3x7n"]
+[gd_scene load_steps=126 format=3 uid="uid://djruxi2ln3x7n"]
 
 [ext_resource type="Script" path="res://scripts/fight_mode_player.gd" id="1_rlagq"]
 [ext_resource type="Texture2D" uid="uid://o5ivfudqr5dn" path="res://assets/sprites/idle_true.png" id="2_ysrqa"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8ndtg"]
-radius = 38.0
+radius = 29.9418
 height = 138.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jknuw"]
@@ -933,6 +933,10 @@ height = 52.239
 [sub_resource type="CircleShape2D" id="CircleShape2D_vck8q"]
 radius = 66.6125
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ey7e2"]
+radius = 29.9418
+height = 137.605
+
 [node name="FightModePlayer" type="CharacterBody2D" groups=["player"]]
 scale = Vector2(1.56971, 1.56971)
 script = ExtResource("1_rlagq")
@@ -949,85 +953,6 @@ animation = &"idle"
 [node name="FireballSpawn" type="Marker2D" parent="."]
 position = Vector2(46, 0)
 
-[node name="LightPunchCollider" type="CollisionShape2D" parent="."]
-light_mask = 2
-visibility_layer = 2
-position = Vector2(63.069, -16.5636)
-shape = SubResource("CircleShape2D_0qmst")
-disabled = true
-
-[node name="HeavyPunchCollider" type="CollisionShape2D" parent="."]
-light_mask = 2
-visibility_layer = 2
-position = Vector2(67.2212, -7.69211)
-rotation = -0.317517
-shape = SubResource("CapsuleShape2D_p23hc")
-disabled = true
-
-[node name="LightKickCollider" type="CollisionShape2D" parent="."]
-light_mask = 2
-visibility_layer = 2
-position = Vector2(61.7949, 8.28178)
-shape = SubResource("CircleShape2D_d6o5s")
-disabled = true
-
-[node name="HeavyKickCollider" type="CollisionShape2D" parent="."]
-light_mask = 2
-visibility_layer = 2
-position = Vector2(87.9143, 13.3783)
-rotation = 0.257551
-scale = Vector2(0.996344, 1)
-shape = SubResource("CapsuleShape2D_i5imv")
-disabled = true
-
-[node name="CrouchPunchCollider" type="CollisionShape2D" parent="."]
-light_mask = 2
-visibility_layer = 2
-position = Vector2(67.5284, 12.7412)
-shape = SubResource("CircleShape2D_u0bww")
-disabled = true
-
-[node name="CrouchKickCollider" type="CollisionShape2D" parent="."]
-light_mask = 2
-visibility_layer = 2
-position = Vector2(26.1195, 47.7795)
-rotation = 1.71895
-scale = Vector2(1.00576, 1.01095)
-shape = SubResource("CapsuleShape2D_owelb")
-disabled = true
-
-[node name="AirbornePunchCollider" type="CollisionShape2D" parent="."]
-light_mask = 2
-visibility_layer = 2
-position = Vector2(66.8913, 1.91118)
-shape = SubResource("CircleShape2D_bnc0c")
-disabled = true
-
-[node name="AirborneKickCollider" type="CollisionShape2D" parent="."]
-light_mask = 2
-visibility_layer = 2
-position = Vector2(78.9955, 15.2894)
-rotation = -1.26153
-shape = SubResource("CapsuleShape2D_asqoe")
-disabled = true
-
-[node name="TatsumakiCollider" type="CollisionShape2D" parent="."]
-light_mask = 2
-visibility_layer = 2
-position = Vector2(68.8025, -10.83)
-rotation = -1.41525
-shape = SubResource("CapsuleShape2D_8564v")
-disabled = true
-
-[node name="ShoryukenCollider" type="CollisionShape2D" parent="."]
-light_mask = 2
-visibility_layer = 2
-position = Vector2(15.2894, -5.73354)
-rotation = -0.194195
-scale = Vector2(1, 0.973219)
-shape = SubResource("CircleShape2D_vck8q")
-disabled = true
-
 [node name="RayCastRight" type="RayCast2D" parent="."]
 target_position = Vector2(370.769, 0)
 
@@ -1037,3 +962,111 @@ target_position = Vector2(370.769, 0)
 
 [node name="Marker2D" type="Marker2D" parent="."]
 position = Vector2(135.694, 0)
+
+[node name="LightPunchHitBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+monitoring = false
+
+[node name="LightPunchCollider" type="CollisionShape2D" parent="LightPunchHitBox"]
+position = Vector2(63.069, -16.5636)
+shape = SubResource("CircleShape2D_0qmst")
+
+[node name="HeavyPunchHitBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+monitoring = false
+
+[node name="HeavyPunchCollider" type="CollisionShape2D" parent="HeavyPunchHitBox"]
+position = Vector2(67.2212, -7.69211)
+rotation = -0.317517
+shape = SubResource("CapsuleShape2D_p23hc")
+
+[node name="LightKickHitBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+monitoring = false
+
+[node name="LightKickCollider" type="CollisionShape2D" parent="LightKickHitBox"]
+position = Vector2(61.7949, 8.28178)
+shape = SubResource("CircleShape2D_d6o5s")
+
+[node name="HeavyKickHitBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+monitoring = false
+
+[node name="HeavyKickCollider" type="CollisionShape2D" parent="HeavyKickHitBox"]
+position = Vector2(87.9143, 13.3783)
+rotation = 0.257551
+scale = Vector2(0.996344, 1)
+shape = SubResource("CapsuleShape2D_i5imv")
+
+[node name="CrouchPunchHitBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+monitoring = false
+
+[node name="CrouchPunchCollider" type="CollisionShape2D" parent="CrouchPunchHitBox"]
+position = Vector2(67.5284, 12.7412)
+shape = SubResource("CircleShape2D_u0bww")
+
+[node name="CrouchKickHitBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+monitoring = false
+
+[node name="CrouchKickCollider" type="CollisionShape2D" parent="CrouchKickHitBox"]
+position = Vector2(26.1195, 47.7795)
+rotation = 1.71895
+scale = Vector2(1.00576, 1.01095)
+shape = SubResource("CapsuleShape2D_owelb")
+
+[node name="AirbornePunchHitBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+monitoring = false
+
+[node name="AirbornePunchCollider" type="CollisionShape2D" parent="AirbornePunchHitBox"]
+position = Vector2(66.8913, 1.91118)
+shape = SubResource("CircleShape2D_bnc0c")
+
+[node name="AirborneKickHitBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+monitoring = false
+
+[node name="AirborneKickCollider" type="CollisionShape2D" parent="AirborneKickHitBox"]
+position = Vector2(78.9955, 15.2894)
+rotation = -1.26153
+shape = SubResource("CapsuleShape2D_asqoe")
+
+[node name="TatsumakiHitBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+monitoring = false
+
+[node name="TatsumakiCollider" type="CollisionShape2D" parent="TatsumakiHitBox"]
+position = Vector2(68.8025, -10.83)
+rotation = -1.41525
+shape = SubResource("CapsuleShape2D_8564v")
+
+[node name="ShoryukenHitBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+monitoring = false
+
+[node name="ShoryukenCollider" type="CollisionShape2D" parent="ShoryukenHitBox"]
+position = Vector2(15.2894, -5.73354)
+rotation = -0.194195
+scale = Vector2(1, 0.973219)
+shape = SubResource("CircleShape2D_vck8q")
+
+[node name="HurtBox" type="Area2D" parent="."]
+position = Vector2(0, 0.63706)
+collision_layer = 2
+collision_mask = 4
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+shape = SubResource("CapsuleShape2D_ey7e2")

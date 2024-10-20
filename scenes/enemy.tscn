@@ -1,11 +1,11 @@
-[gd_scene load_steps=34 format=3 uid="uid://crkq3m57lif7p"]
+[gd_scene load_steps=35 format=3 uid="uid://crkq3m57lif7p"]
 
 [ext_resource type="Texture2D" uid="uid://c68s4m88cn3kx" path="res://assets/sprites/enemy_nk.png" id="1_4xguc"]
 [ext_resource type="Script" path="res://scripts/enemy.gd" id="1_b51qc"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_drrrp"]
-radius = 301.0
-height = 656.0
+radius = 335.131
+height = 935.422
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3324s"]
 atlas = ExtResource("1_4xguc")
@@ -231,18 +231,25 @@ animations = [{
 "speed": 12.0
 }]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_euwtb"]
+radius = 91.0
+height = 254.0
+
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_nt2kn"]
-radius = 159.193
-height = 564.22
+radius = 98.4336
+height = 456.855
 
 [node name="Enemy" type="CharacterBody2D" groups=["enemy"]]
 script = ExtResource("1_b51qc")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-124, 137)
+position = Vector2(-33, 15)
+scale = Vector2(0.271535, 0.271535)
 shape = SubResource("CapsuleShape2D_drrrp")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+visibility_layer = 3
+scale = Vector2(0.299315, 0.299315)
 sprite_frames = SubResource("SpriteFrames_5mhsc")
 animation = &"attack"
 frame = 3
@@ -255,10 +262,28 @@ target_position = Vector2(2737, 0)
 rotation = -3.14167
 target_position = Vector2(2412, -1.81289)
 
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
-light_mask = 2
-visibility_layer = 2
-position = Vector2(269, -84)
+[node name="FireballSpawn" type="Marker2D" parent="."]
+position = Vector2(9, -34)
+scale = Vector2(-3.1176, -98.338)
+
+[node name="HurtBox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 10
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+position = Vector2(-33, 15)
+shape = SubResource("CapsuleShape2D_euwtb")
+
+[node name="HitBox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 2
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+position = Vector2(75, -43)
 rotation = 1.33565
+scale = Vector2(0.246989, 0.354684)
 shape = SubResource("CapsuleShape2D_nt2kn")
-disabled = true
+
+[connection signal="area_entered" from="HurtBox" to="." method="_on_hurt_box_area_entered"]

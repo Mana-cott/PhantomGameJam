@@ -16,9 +16,9 @@
 
 [node name="FightModeLevel" parent="FightMode" instance=ExtResource("4_vbmcx")]
 
-[node name="Player" parent="FightMode" instance=ExtResource("1_74vlj")]
-position = Vector2(-435, 34)
-
 [node name="Enemy" parent="FightMode" instance=ExtResource("5_mvnjw")]
 position = Vector2(46, 2)
-scale = Vector2(0.306778, 0.306778)
+scale = Vector2(0.918398, 0.918398)
+
+[node name="Player" parent="FightMode" instance=ExtResource("1_74vlj")]
+position = Vector2(-435, 34)

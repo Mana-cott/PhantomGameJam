@@ -2,7 +2,7 @@ extends CharacterBody2D
 
 const SPEED = 300.0
 const SPRINT_SPEED = 600.0
-const JUMP_VELOCITY = -600.0
+const JUMP_VELOCITY = -700.0
 const DOUBLE_TAP_SPRINT_TIME = 0.3
 const LIGHT_PUNCH_DURATION = 0.3
 const HEAVY_PUNCH_DURATION = 0.8
@@ -36,6 +36,7 @@ var first_last_face_value = true
 var hadouken_string_input = "move_right"
 var tatsumaki_string_input = "move_left"
 var shoryuken_string_input = "move_right"
+var sprint_string_input = "move_right"
 var is_scale_x_flipped = false
 var side_multiplier = 1 # positive
 var sprinting = false
@@ -82,24 +83,32 @@ var combat_state_checker: bool = not light_punching and not heavy_punching and n
 @onready var left_raycast: RayCast2D = $RayCastLeft
 
 # hitboxes
-@onready var light_punch_collider: CollisionShape2D = $LightPunchCollider
-@onready var heavy_punch_collider: CollisionShape2D = $HeavyPunchCollider
-@onready var light_kick_collider: CollisionShape2D = $LightKickCollider
-@onready var heavy_kick_collider: CollisionShape2D = $HeavyKickCollider
-@onready var crouch_punch_collider: CollisionShape2D = $CrouchPunchCollider
-@onready var crouch_kick_collider: CollisionShape2D = $CrouchKickCollider
-@onready var airborne_punch_collider: CollisionShape2D = $AirbornePunchCollider
-@onready var airborne_kick_collider: CollisionShape2D = $AirborneKickCollider
-@onready var tatsumaki_collider: CollisionShape2D = $TatsumakiCollider
-@onready var shoryuken_collider: CollisionShape2D = $ShoryukenCollider
+@onready var light_punch_hitbox: CollisionShape2D = $LightPunchHitBox/LightPunchCollider
+@onready var heavy_punch_hitbox: CollisionShape2D = $HeavyPunchHitBox/HeavyPunchCollider
+@onready var light_kick_hitbox: CollisionShape2D = $LightKickHitBox/LightKickCollider
+@onready var heavy_kick_hitbox: CollisionShape2D = $HeavyKickHitBox/HeavyKickCollider
+@onready var crouch_punch_hitbox: CollisionShape2D = $CrouchPunchHitBox/CrouchPunchCollider
+@onready var crouch_kick_hitbox: CollisionShape2D = $CrouchKickHitBox/CrouchKickCollider
+@onready var airborne_punch_hitbox: CollisionShape2D = $AirbornePunchHitBox/AirbornePunchCollider
+@onready var airborne_kick_hitbox: CollisionShape2D = $AirborneKickHitBox/AirborneKickCollider
+@onready var tatsumaki_hitbox: CollisionShape2D = $TatsumakiHitBox/TatsumakiCollider
+@onready var shoryuken_hitbox: CollisionShape2D = $ShoryukenHitBox/ShoryukenCollider
+
+func _ready():
+	light_punch_hitbox.disabled = true
+	heavy_punch_hitbox.disabled = true
+	light_kick_hitbox.disabled = true
+	heavy_kick_hitbox.disabled = true
+	crouch_punch_hitbox.disabled = true
+	crouch_kick_hitbox.disabled = true
+	airborne_punch_hitbox.disabled = true
+	airborne_kick_hitbox.disabled = true
+	tatsumaki_hitbox.disabled = true
+	shoryuken_hitbox.disabled = true
 
 func _physics_process(delta):
-	print(third_last_face_value)
-	print(second_last_face_value)
-	print(third_last_face_value)
 	# false, false, true combo that leads to switch
 	if(!third_last_face_value && !second_last_face_value && first_last_face_value):
-		print("entered combo flip")
 		if is_combo_flipped:
 			is_combo_flipped = false
 		else:
@@ -108,22 +117,26 @@ func _physics_process(delta):
 			hadouken_string_input = "move_left"
 			tatsumaki_string_input = "move_right"
 			shoryuken_string_input = "move_left"
+			sprint_string_input = "move_left"
+			side_multiplier = -1
 		else:
 			hadouken_string_input = "move_right"
 			tatsumaki_string_input = "move_left"
 			shoryuken_string_input = "move_right"
+			sprint_string_input = "move_right"
+			side_multiplier = 1
 	
 	# activate hitboxes
-	light_punch_collider.disabled = !light_punching
-	heavy_punch_collider.disabled = !heavy_punching
-	light_kick_collider.disabled = !light_kicking
-	heavy_kick_collider.disabled = !heavy_kicking
-	crouch_punch_collider.disabled = !crouch_punching
-	crouch_kick_collider.disabled = !crouch_kicking
-	airborne_punch_collider.disabled = !airborne_punching
-	airborne_kick_collider.disabled = !airborne_kicking
-	tatsumaki_collider.disabled = !tatsumaki_playing
-	shoryuken_collider.disabled = !shoryuken_playing
+	light_punch_hitbox.disabled = !light_punching
+	heavy_punch_hitbox.disabled = !heavy_punching
+	light_kick_hitbox.disabled = !light_kicking
+	heavy_kick_hitbox.disabled = !heavy_kicking
+	crouch_punch_hitbox.disabled = !crouch_punching
+	crouch_kick_hitbox.disabled = !crouch_kicking
+	airborne_punch_hitbox.disabled = !airborne_punching
+	airborne_kick_hitbox.disabled = !airborne_kicking
+	tatsumaki_hitbox.disabled = !tatsumaki_playing
+	shoryuken_hitbox.disabled = !shoryuken_playing
 	
 	last_right_tap_time += delta
 	
@@ -132,23 +145,23 @@ func _physics_process(delta):
 		if is_scale_x_flipped:
 			self.scale.x = self.scale.x
 			is_scale_x_flipped = false
-		side_multiplier = 1
 	else:
 		if !is_scale_x_flipped:
 			self.scale.x = -self.scale.x
 			is_scale_x_flipped = true
-		side_multiplier = -1
 
-	if left_raycast.is_colliding() and left_raycast.get_collider().is_in_group("enemy"):
-		is_facing_right = false
-		third_last_face_value = second_last_face_value
-		second_last_face_value = first_last_face_value
-		first_last_face_value = false
-	if right_raycast.is_colliding() and right_raycast.get_collider().is_in_group("enemy"):
-		is_facing_right = true
-		third_last_face_value = second_last_face_value
-		second_last_face_value = first_last_face_value
-		first_last_face_value = true
+	if left_raycast.is_colliding():
+		if left_raycast.get_collider() != null and left_raycast.get_collider().is_in_group("enemy"):
+			is_facing_right = false
+			third_last_face_value = second_last_face_value
+			second_last_face_value = first_last_face_value
+			first_last_face_value = false
+	if right_raycast.is_colliding():
+		if right_raycast.get_collider() != null and right_raycast.get_collider().is_in_group("enemy"):
+			is_facing_right = true
+			third_last_face_value = second_last_face_value
+			second_last_face_value = first_last_face_value
+			first_last_face_value = true
 	
 	# Handle Hadouken duration logic
 	if hadouken_playing:
@@ -362,10 +375,16 @@ func _physics_process(delta):
 					_set_animation("walk", true)
 					crouching = false
 			elif Input.is_action_pressed("move_left"):
-				velocity.x = -SPEED
-				_set_animation("walk", false)
-				sprinting = false
-				crouching = false
+				if sprinting or _is_double_tap_sprint():
+					sprinting = true
+					velocity.x = -SPRINT_SPEED
+					_set_animation("run", true)
+					crouching = false
+				else:
+					velocity.x = -SPEED
+					_set_animation("walk", false)
+					sprinting = false
+					crouching = false
 			elif Input.is_action_pressed("move_down") and is_on_floor():
 				crouching = true
 				velocity = Vector2.ZERO
@@ -394,7 +413,7 @@ func _set_animation(animation_name: String, is_forward: bool):
 
 # Sprint checker
 func _is_double_tap_sprint() -> bool:
-	if Input.is_action_just_pressed("move_right"):
+	if Input.is_action_just_pressed(sprint_string_input):
 		if last_right_tap_time < DOUBLE_TAP_SPRINT_TIME:
 			last_right_tap_time = 0.0
 			return true
