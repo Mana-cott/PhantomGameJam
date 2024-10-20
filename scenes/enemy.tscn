@@ -1,11 +1,11 @@
-[gd_scene load_steps=33 format=3 uid="uid://crkq3m57lif7p"]
+[gd_scene load_steps=34 format=3 uid="uid://crkq3m57lif7p"]
 
 [ext_resource type="Texture2D" uid="uid://c68s4m88cn3kx" path="res://assets/sprites/enemy_nk.png" id="1_4xguc"]
 [ext_resource type="Script" path="res://scripts/enemy.gd" id="1_b51qc"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_drrrp"]
-radius = 322.0
-height = 680.0
+radius = 301.0
+height = 656.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3324s"]
 atlas = ExtResource("1_4xguc")
@@ -231,21 +231,34 @@ animations = [{
 "speed": 12.0
 }]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_nt2kn"]
+radius = 159.193
+height = 564.22
+
 [node name="Enemy" type="CharacterBody2D" groups=["enemy"]]
 script = ExtResource("1_b51qc")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-35, 127)
+position = Vector2(-124, 137)
 shape = SubResource("CapsuleShape2D_drrrp")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_5mhsc")
-animation = &"walk"
-frame_progress = 0.80378
+animation = &"attack"
+frame = 3
+frame_progress = 0.653386
 
 [node name="RayCastRight" type="RayCast2D" parent="."]
-target_position = Vector2(1000, 0)
+target_position = Vector2(2737, 0)
 
 [node name="RayCastLeft" type="RayCast2D" parent="."]
 rotation = -3.14167
-target_position = Vector2(1000, 0)
+target_position = Vector2(2412, -1.81289)
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(269, -84)
+rotation = 1.33565
+shape = SubResource("CapsuleShape2D_nt2kn")
+disabled = true

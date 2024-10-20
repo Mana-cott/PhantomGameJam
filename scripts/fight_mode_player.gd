@@ -29,6 +29,13 @@ const SHORYUKEN_FORWARD_VELOCITY = 200.0
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var current_animation = ""
 var is_facing_right = true # starts off true
+var is_combo_flipped = false
+var third_last_face_value = true
+var second_last_face_value = true
+var first_last_face_value = true
+var hadouken_string_input = "move_right"
+var tatsumaki_string_input = "move_left"
+var shoryuken_string_input = "move_right"
 var is_scale_x_flipped = false
 var side_multiplier = 1 # positive
 var sprinting = false
@@ -66,6 +73,8 @@ var tatsumaki_step = 0
 var shoryuken_step = 0
 var combat_state_checker: bool = not light_punching and not heavy_punching and not light_kicking and not heavy_kicking and not crouch_punching and not crouch_kicking and not airborne_punching and not airborne_kicking and not hadouken_playing and not tatsumaki_playing and not shoryuken_playing
 
+@export var is_disabled = false
+
 @onready var animator: AnimatedSprite2D = $AnimatedSprite2D
 @onready var fireball_spawn: Marker2D = $FireballSpawn
 @onready var fireball_scene = preload("res://scenes/fireball.tscn")
@@ -85,6 +94,24 @@ var combat_state_checker: bool = not light_punching and not heavy_punching and n
 @onready var shoryuken_collider: CollisionShape2D = $ShoryukenCollider
 
 func _physics_process(delta):
+	print(third_last_face_value)
+	print(second_last_face_value)
+	print(third_last_face_value)
+	# false, false, true combo that leads to switch
+	if(!third_last_face_value && !second_last_face_value && first_last_face_value):
+		print("entered combo flip")
+		if is_combo_flipped:
+			is_combo_flipped = false
+		else:
+			is_combo_flipped = true
+		if is_combo_flipped:
+			hadouken_string_input = "move_left"
+			tatsumaki_string_input = "move_right"
+			shoryuken_string_input = "move_left"
+		else:
+			hadouken_string_input = "move_right"
+			tatsumaki_string_input = "move_left"
+			shoryuken_string_input = "move_right"
 	
 	# activate hitboxes
 	light_punch_collider.disabled = !light_punching
@@ -101,7 +128,6 @@ func _physics_process(delta):
 	last_right_tap_time += delta
 	
 	# Correct flipping logic
-	print(self.scale.x)
 	if is_facing_right:
 		if is_scale_x_flipped:
 			self.scale.x = self.scale.x
@@ -115,8 +141,14 @@ func _physics_process(delta):
 
 	if left_raycast.is_colliding() and left_raycast.get_collider().is_in_group("enemy"):
 		is_facing_right = false
+		third_last_face_value = second_last_face_value
+		second_last_face_value = first_last_face_value
+		first_last_face_value = false
 	if right_raycast.is_colliding() and right_raycast.get_collider().is_in_group("enemy"):
 		is_facing_right = true
+		third_last_face_value = second_last_face_value
+		second_last_face_value = first_last_face_value
+		first_last_face_value = true
 	
 	# Handle Hadouken duration logic
 	if hadouken_playing:
@@ -304,7 +336,6 @@ func _physics_process(delta):
 	# Airborne Punch logic (AP)
 	if (Input.is_action_just_pressed("light_punch") or Input.is_action_just_pressed("heavy_punch")) and not is_on_floor() and combat_state_checker:
 		if not airborne_punching:  # Only start if not already airborne punching
-			print("airborne punching")
 			_set_animation("jump_punch", true)
 			airborne_punching = true
 			airborne_punch_timer = AIRBORNE_PUNCH_DURATION
@@ -312,7 +343,6 @@ func _physics_process(delta):
 	# Airborne Kick logic (AK)
 	if (Input.is_action_just_pressed("light_kick") or Input.is_action_just_pressed("heavy_kick")) and not is_on_floor() and combat_state_checker:
 		if not airborne_kicking:  # Only start if not already airborne kicking
-			print("airborne kicking")
 			_set_animation("jump_kick", true)
 			airborne_kicking = true
 			airborne_kick_timer = AIRBORNE_KICK_DURATION
@@ -360,7 +390,7 @@ func _set_animation(animation_name: String, is_forward: bool):
 		else:
 			animator.play_backwards(animation_name)
 		current_animation = animation_name
-		print(current_animation)
+		#print(current_animation)
 
 # Sprint checker
 func _is_double_tap_sprint() -> bool:
@@ -379,11 +409,10 @@ func _check_hadouken_sequence():
 				hadouken_step = 1
 				hadouken_input_timer = HADOUKEN_INPUT_TIME
 		1:
-			if Input.is_action_just_pressed("move_right"):
+			if Input.is_action_just_pressed(hadouken_string_input):
 				hadouken_step = 2
 		2:
-			if Input.is_action_pressed("move_right") and not Input.is_action_pressed("move_down"):
-				print("step 3")
+			if Input.is_action_pressed(hadouken_string_input) and not Input.is_action_pressed("move_down"):
 				hadouken_step = 3  # Hadouken sequence complete!
 
 # Tatsumaki input sequence checker
@@ -394,24 +423,24 @@ func _check_tatsumaki_sequence():
 				tatsumaki_step = 1
 				tatsumaki_input_timer = TATSUMAKI_INPUT_TIME
 		1:
-			if Input.is_action_just_pressed("move_left"):
+			if Input.is_action_just_pressed(tatsumaki_string_input):
 				tatsumaki_step = 2
 		2:
-			if Input.is_action_pressed("move_left") and not Input.is_action_pressed("move_down"):
+			if Input.is_action_pressed(tatsumaki_string_input) and not Input.is_action_pressed("move_down"):
 				tatsumaki_step = 3  # Tatsumaki sequence complete!
 
 # Shoryuken input sequence checker
 func _check_shoryuken_sequence():
 	match shoryuken_step:
 		0:
-			if Input.is_action_just_pressed("move_right"):
+			if Input.is_action_just_pressed(shoryuken_string_input):
 				shoryuken_step = 1
 				shoryuken_input_timer = SHORYUKEN_INPUT_TIME
 		1:
 			if Input.is_action_just_pressed("move_down"):
 				shoryuken_step = 2
 		2:
-			if Input.is_action_just_pressed("move_right"):
+			if Input.is_action_just_pressed(shoryuken_string_input):
 				shoryuken_step = 3  # Shoryuken sequence complete!
 
 # Trigger Hadouken animation
@@ -438,7 +467,6 @@ func _trigger_hadouken():
 
 # Trigger Tatsumaki animation
 func _trigger_tatsumaki():
-	print("activated tatsu")
 	light_punching = false
 	heavy_punching = false
 	tatsumaki_playing = true

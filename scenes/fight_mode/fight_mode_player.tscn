@@ -933,7 +933,7 @@ height = 52.239
 [sub_resource type="CircleShape2D" id="CircleShape2D_vck8q"]
 radius = 66.6125
 
-[node name="FightModePlayer" type="CharacterBody2D"]
+[node name="FightModePlayer" type="CharacterBody2D" groups=["player"]]
 scale = Vector2(1.56971, 1.56971)
 script = ExtResource("1_rlagq")
 
@@ -1034,3 +1034,6 @@ target_position = Vector2(370.769, 0)
 [node name="RayCastLeft" type="RayCast2D" parent="."]
 rotation = -3.14167
 target_position = Vector2(370.769, 0)
+
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(135.694, 0)
