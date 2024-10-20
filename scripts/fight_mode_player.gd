@@ -1,5 +1,6 @@
 extends CharacterBody2D
 
+const MAX_HEALTH = 100
 const SPEED = 300.0
 const SPRINT_SPEED = 600.0
 const JUMP_VELOCITY = -700.0
@@ -12,6 +13,8 @@ const CROUCH_PUNCH_DURATION = 0.4
 const CROUCH_KICK_DURATION = 0.4
 const AIRBORNE_PUNCH_DURATION = 0.4
 const AIRBORNE_KICK_DURATION = 0.4
+const LIGHT_KNOCKBACK_FORCE = 150.0
+const HEAVY_KNOCKBACK_FORCE = 300.0
 # hadouken
 const HADOUKEN_DURATION = 0.5
 const HADOUKEN_INPUT_TIME = 0.5
@@ -27,6 +30,7 @@ const SHORYUKEN_JUMP_VELOCITY = -300.0
 const SHORYUKEN_FORWARD_VELOCITY = 200.0
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
+var current_health = MAX_HEALTH
 var current_animation = ""
 var is_facing_right = true # starts off true
 var is_combo_flipped = false
@@ -69,6 +73,7 @@ var shoryuken_duration_timer = 0.0
 var hadouken_input_timer = 0.0
 var tatsumaki_input_timer = 0.0
 var shoryuken_input_timer = 0.0
+var hurt_timer = 0.0
 var hadouken_step = 0
 var tatsumaki_step = 0
 var shoryuken_step = 0
@@ -107,6 +112,13 @@ func _ready():
 	shoryuken_hitbox.disabled = true
 
 func _physics_process(delta):
+	
+	if hurt_timer > 0:
+		hurt_timer -= delta
+	
+	if current_health <= 0:
+		_die()
+	
 	# false, false, true combo that leads to switch
 	if(!third_last_face_value && !second_last_face_value && first_last_face_value):
 		if is_combo_flipped:
@@ -504,3 +516,57 @@ func _trigger_shoryuken():
 	velocity.x = SHORYUKEN_FORWARD_VELOCITY * side_multiplier
 	_set_animation("shoryuken", true)
 	shoryuken_step = 0
+
+func _die():
+	queue_free()
+	
+func _block_damage(base_damage: int):
+	print("is blocking")
+	if hurt_timer <= 0:
+		animator.play("block_hit")
+		self.current_health -= base_damage/10
+		print(self.current_health)
+		hurt_timer = 0.6
+
+		# Apply knockback
+		var knockback_direction = Vector2(1, 0) if is_combo_flipped else Vector2(-1, 0)
+		velocity.x = knockback_direction.x * LIGHT_KNOCKBACK_FORCE
+	
+	
+func _light_damage_player(base_damage: int):
+	if hurt_timer <= 0:
+		animator.play("light_hurt")
+		self.current_health -= base_damage
+		print(self.current_health)
+		hurt_timer = 0.6
+
+		# Apply knockback
+		var knockback_direction = Vector2(1, 0) if is_combo_flipped else Vector2(-1, 0)
+		velocity.x = knockback_direction.x * LIGHT_KNOCKBACK_FORCE
+
+func _heavy_damage_player(base_damage: int):
+	if hurt_timer <= 0:
+		animator.play("heavy_hurt")
+		self.current_health -= base_damage
+		print(self.current_health)
+		hurt_timer = 0.6
+
+		# Apply knockback
+		var knockback_direction = Vector2(1, 0) if is_combo_flipped else Vector2(-1, 0)
+		velocity.x = knockback_direction.x * HEAVY_KNOCKBACK_FORCE
+
+func _on_hurt_box_area_entered(hitbox):
+	var random_bool = randf() < 0.5
+	if random_bool:
+		# block
+		if Input.is_action_pressed(tatsumaki_string_input):
+			_block_damage(10)
+		else:
+			_light_damage_player(10)
+	else:
+		# block
+		if Input.is_action_pressed(tatsumaki_string_input):
+			_block_damage(20)
+		else:
+			_heavy_damage_player(20)
+

@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://crkq3m57lif7p"]
+[gd_scene load_steps=36 format=3 uid="uid://crkq3m57lif7p"]
 
 [ext_resource type="Texture2D" uid="uid://c68s4m88cn3kx" path="res://assets/sprites/enemy_nk.png" id="1_4xguc"]
 [ext_resource type="Script" path="res://scripts/enemy.gd" id="1_b51qc"]
@@ -50,6 +50,10 @@ region = Rect2(3753, 3880, 1251, 970)
 [sub_resource type="AtlasTexture" id="AtlasTexture_htm8x"]
 atlas = ExtResource("1_4xguc")
 region = Rect2(5004, 3880, 1251, 970)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cjhv0"]
+atlas = ExtResource("1_4xguc")
+region = Rect2(6255, 3880, 1251, 970)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r7knx"]
 atlas = ExtResource("1_4xguc")
@@ -159,6 +163,21 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_htm8x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cjhv0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cjhv0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cjhv0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cjhv0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cjhv0")
 }],
 "loop": true,
 "name": &"dead",
@@ -251,9 +270,8 @@ shape = SubResource("CapsuleShape2D_drrrp")
 visibility_layer = 3
 scale = Vector2(0.299315, 0.299315)
 sprite_frames = SubResource("SpriteFrames_5mhsc")
-animation = &"attack"
-frame = 3
-frame_progress = 0.653386
+animation = &"dead"
+frame_progress = 0.970517
 
 [node name="RayCastRight" type="RayCast2D" parent="."]
 target_position = Vector2(2737, 0)
@@ -285,5 +303,6 @@ position = Vector2(75, -43)
 rotation = 1.33565
 scale = Vector2(0.246989, 0.354684)
 shape = SubResource("CapsuleShape2D_nt2kn")
+disabled = true
 
 [connection signal="area_entered" from="HurtBox" to="." method="_on_hurt_box_area_entered"]

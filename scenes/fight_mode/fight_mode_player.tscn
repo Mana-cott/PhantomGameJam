@@ -1,4 +1,4 @@
-[gd_scene load_steps=126 format=3 uid="uid://djruxi2ln3x7n"]
+[gd_scene load_steps=137 format=3 uid="uid://djruxi2ln3x7n"]
 
 [ext_resource type="Script" path="res://scripts/fight_mode_player.gd" id="1_rlagq"]
 [ext_resource type="Texture2D" uid="uid://o5ivfudqr5dn" path="res://assets/sprites/idle_true.png" id="2_ysrqa"]
@@ -87,6 +87,10 @@ region = Rect2(2588, 6874, 1294, 982)
 atlas = ExtResource("2_ysrqa")
 region = Rect2(3882, 6874, 1294, 982)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_cnish"]
+atlas = ExtResource("2_ysrqa")
+region = Rect2(7764, 8838, 1294, 982)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_ylhyo"]
 atlas = ExtResource("2_ysrqa")
 region = Rect2(14234, 2946, 1294, 982)
@@ -106,6 +110,30 @@ region = Rect2(2588, 3928, 1294, 982)
 [sub_resource type="AtlasTexture" id="AtlasTexture_xsolq"]
 atlas = ExtResource("2_ysrqa")
 region = Rect2(3882, 3928, 1294, 982)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2li6j"]
+atlas = ExtResource("2_ysrqa")
+region = Rect2(1294, 8838, 1294, 982)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4407v"]
+atlas = ExtResource("2_ysrqa")
+region = Rect2(2588, 8838, 1294, 982)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xjr6s"]
+atlas = ExtResource("2_ysrqa")
+region = Rect2(3882, 8838, 1294, 982)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k2cwj"]
+atlas = ExtResource("2_ysrqa")
+region = Rect2(5176, 8838, 1294, 982)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xh7mc"]
+atlas = ExtResource("2_ysrqa")
+region = Rect2(6470, 8838, 1294, 982)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l2h3c"]
+atlas = ExtResource("2_ysrqa")
+region = Rect2(7764, 8838, 1294, 982)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8ds3e"]
 atlas = ExtResource("2_ysrqa")
@@ -286,6 +314,22 @@ region = Rect2(9058, 1964, 1294, 982)
 [sub_resource type="AtlasTexture" id="AtlasTexture_bdg2i"]
 atlas = ExtResource("2_ysrqa")
 region = Rect2(10352, 1964, 1294, 982)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y3eei"]
+atlas = ExtResource("2_ysrqa")
+region = Rect2(11646, 7856, 1294, 982)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ienwx"]
+atlas = ExtResource("2_ysrqa")
+region = Rect2(12940, 7856, 1294, 982)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ipfrc"]
+atlas = ExtResource("2_ysrqa")
+region = Rect2(14234, 7856, 1294, 982)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qjs71"]
+atlas = ExtResource("2_ysrqa")
+region = Rect2(0, 8838, 1294, 982)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_6ybbc"]
 atlas = ExtResource("2_ysrqa")
@@ -546,6 +590,14 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_cnish")
+}],
+"loop": true,
+"name": &"dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_ylhyo")
 }, {
 "duration": 1.0,
@@ -565,6 +617,29 @@ animations = [{
 }],
 "loop": false,
 "name": &"hadouken",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2li6j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4407v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xjr6s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k2cwj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xh7mc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l2h3c")
+}],
+"loop": true,
+"name": &"heavy_hurt",
 "speed": 12.0
 }, {
 "frames": [{
@@ -743,6 +818,23 @@ animations = [{
 }],
 "loop": false,
 "name": &"jump_start",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y3eei")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ienwx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ipfrc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qjs71")
+}],
+"loop": false,
+"name": &"light_hurt",
 "speed": 12.0
 }, {
 "frames": [{
@@ -948,7 +1040,7 @@ shape = SubResource("CapsuleShape2D_8ndtg")
 position = Vector2(22, -1)
 scale = Vector2(0.1498, 0.1498)
 sprite_frames = SubResource("SpriteFrames_6u8th")
-animation = &"idle"
+animation = &"block_hit"
 
 [node name="FireballSpawn" type="Marker2D" parent="."]
 position = Vector2(46, 0)
@@ -961,7 +1053,7 @@ rotation = -3.14167
 target_position = Vector2(370.769, 0)
 
 [node name="Marker2D" type="Marker2D" parent="."]
-position = Vector2(135.694, 0)
+position = Vector2(89.8255, 0)
 
 [node name="LightPunchHitBox" type="Area2D" parent="."]
 collision_layer = 2
@@ -1070,3 +1162,5 @@ monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
 shape = SubResource("CapsuleShape2D_ey7e2")
+
+[connection signal="area_entered" from="HurtBox" to="." method="_on_hurt_box_area_entered"]
